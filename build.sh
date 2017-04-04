@@ -2,7 +2,9 @@
 # This is generic build script we generated for our use case.
 arg="$1"
 ROOT_DIR=$PWD
-SRC_DIR=$ROOT_DIR/src
+SRC_DIR=$ROOT_DIR/dl
+OUT_DIR=$ROOT_DIR/output
+BUILD_DIR=$OUT_DIR/build
 TOOLCHAIN_DIR=$ROOT_DIR/output/build/toolchain
 UBOOT_DIR=$ROOT_DIR/output/build/uboot-odroid-v2015.10
 KERNEL_DIR=$ROOT_DIR/output/build/linux-odroid-4.8.y
@@ -35,11 +37,18 @@ function print_help () {
 	echo "####################################################"
 }
 
+function get_toolchain() {
+	mkdir -p $SRC_DIR
+	cd $SRC_DIR
+	wget https://github.com/Rhomb-io/ubuntu-rhomb/releases/download/1.0.0/exynos_arm_toolchain.tgz
+}
+
 function export_toolchain () {
 	if [ -d $TOOLCHAIN_DIR ];
 	then
 	export PATH=$PATH:/$TOOLCHAIN_DIR
 	else
+		get_toolchain
 		mkdir -p $TOOLCHAIN_DIR
 		cd $TOOLCHAIN_DIR
 		tar -zxvf $SRC_DIR/exynos_arm_toolchain.tgz
@@ -116,15 +125,38 @@ function uboot_build () {
 	fi
 }
 
-function ubuntu_build () {
-	mkdir -p $UBUNTU_DIR
+function build_ubuntu () {
+	rm -rf $IMAGES_DIR/ubuntu.tgz
+	sudo cp $FILESYSTEM_DIR/* $UBUNTU_DIR/ -rf
 	cd $UBUNTU_DIR
-	tar -zxvf $SRC_DIR/ubuntu_16_04.tgz
-	cp $FILESYSTEM_DIR/* $UBUNTU_DIR/ -rf
-	tar -cvzf $IMAGES_DIR/ubuntu.tgz *
+	sudo tar -cvzf $IMAGES_DIR/ubuntu.tgz *
 	sync
-	rm -rf $UBUNTU_DIR
 	cd $ROOT_DIR
+}
+
+function get_ubuntu () {
+	mkdir -p $SRC_DIR
+	cd $SRC_DIR
+	wget https://github.com/Rhomb-io/ubuntu-rhomb/releases/download/1.0.1/ubuntu_base_16_04.tgz
+	wget https://github.com/Rhomb-io/ubuntu-rhomb/releases/download/1.0.2/lib.tgz
+	wget https://github.com/Rhomb-io/ubuntu-rhomb/releases/download/1.0.3/share.tgz
+	cd $BUILD_DIR
+	sudo tar -zxvf $SRC_DIR/ubuntu_base_16_04.tgz
+	cd $UBUNTU_DIR
+	cd $UBUNTU_DIR/usr
+	sudo tar -zxvf $SRC_DIR/lib.tgz
+	sudo tar -zxvf $SRC_DIR/share.tgz
+	sync
+}
+
+function ubuntu_build () {
+	if [ -d $UBUNTU_DIR ]
+	then
+		build_ubuntu
+	else
+		get_ubuntu
+		build_ubuntu
+	fi
 }
 
 function all_dir_clean () {
