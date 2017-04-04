@@ -6,7 +6,7 @@ This is pakcage to build and install ubuntu filesystem on rhomb devices.
 Prerequisites
 -------------
 For ubuntu installation use SD card having atleast 16GB capacity.
-
+To use ubuntu pakcage machine should have atleast 15GB free space available. 
 ------------------
 Build Instructions
 ------------------
@@ -38,8 +38,8 @@ Build Instructions
 --------------------
 Install instructions
 --------------------
-1) There is one more script 'prepare_sd.sh'. Using this script user can flash
-   geneated 'zImage' and 'ubuntu.tgz' in sd card.
+1) There is one more script 'prepare_sd.sh'. This scripts flashes all the required 
+   binaries to boot from SD card having ubuntu filesystem. 
    run 'prepare_sd.sh' script:
    # sudo ./prepare_sd.sh <SD Reader's device file>
    example <SD Reader's device file> : sdb, mmcblk0, sdd, sdc etc
