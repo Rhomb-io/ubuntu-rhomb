@@ -81,4 +81,61 @@ command you won't face issue after that.
 # sudo dpkg-reconfigure lightdm
 # sudo /etc/init.d/lightdm restart
 
+-----------------------------------
+Creating and installing image files
+-----------------------------------
+NOTE: Script used in below command uses loopback device to create sd card image.
+      For that linux machine should support patitioning on loopback device.
+      Please go through below instructions carefully before applying below
+      command.
+-------------
+Prerequisites
+-------------
+   a) Your machine must have alteast 15GB free space.
 
+   b) Check how many maximum partition are allowed for loop device.
+      # cat /sys/module/loop/parameters/max_part
+        If it's 0, apply below command to increase it.
+
+        # modprobe -r loop # unload the module
+        # modprobe loop max_part=31
+
+   c) To make this setting persistent, add the following line to /etc/modprobe.conf or
+      to a file in /etc/modprobe.d if that directory exists on your system:
+      options loop max_part=31
+
+   d) If modprobe -r loop fails because “Module loop is builtin”, you'll need to add
+      loop.max_part=31  to your kernel command line and reboot. If your bootloader
+      is Grub2, add to it to the value of  GRUB_CMDLINE_LINUX in /etc/default/grub
+      example:
+      GRUB_CMDLINE_LINUX="loop.max_part=31"
+
+    e) After adding it apply below command
+       # update-grub
+    f) Reboot your PC.
+
+    g) After rebooting verify weather grub change has changes value of loop max_part.
+       # cat /sys/module/loop/parameters/max_part
+        (it should now display '31' instead of '0')
+        or
+       # cat /proc/cmdline
+        example output:
+        BOOT_IMAGE=/vmlinuz-3.13.0-32-generic root=UUID=bb206250-76b6-4a7b-b6d0-acd15596d597 ro loop.max_part=31 quiet splash vt.handoff=7
+        Here loop.max_part=31 is appended it commandline.
+    h) Now you are ready to run below script.
+
+--------------------
+Install instructions
+--------------------
+1. This package also contains scripts to create ubuntu image. In which single
+   image contains everything.
+2. To create image for sd card use below command.
+   # sudo ./prepare_sd_image.sh <SD Reader's device file>
+
+   That's it! It will create and install single image file in SD card.
+   Once SD card is prepared user need to set board for SD bootmode.
+   Insert prepared SD card and power on board.
+3. You can find "ubuntu_sd.img" in "<ubuntu_rhomb>/output/images" directory.
+
+Note: This is single ubuntu image file contains everything to create bootable
+      SD card.
