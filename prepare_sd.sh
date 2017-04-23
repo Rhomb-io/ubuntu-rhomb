@@ -1,18 +1,9 @@
 #!/bin/bash
-ROOTDIR=$PWD
-OUTPUTDIR=$ROOTDIR/output
-IMAGEDIR=$ROOTDIR/output/images
-UBOOTDIR=$ROOTDIR/output/build/uboot-odroid-v2015.10
+. setup_env
+
 function device_not_found_error () {
 	echo "Given device not found!"
 	echo "please check dmesg for verification"
-}
-
-function copy_bootloader_binaries () {
-	cp $UBOOTDIR/sd_fuse/bl1.HardKernel $IMAGEDIR/
-	cp $UBOOTDIR/sd_fuse/bl2.HardKernel $IMAGEDIR/
-	cp $UBOOTDIR/sd_fuse/tzsw.HardKernel $IMAGEDIR/
-	cp $UBOOTDIR/sd_fuse/sd_fusing.sh $IMAGEDIR/
 }
 
 function create_partition () {
@@ -28,13 +19,13 @@ END
 }
 
 function flash_bootloder () {
-	cd $IMAGEDIR
+	cd $IMAGES_DIR
 	sudo ./sd_fusing.sh /dev/$1
 	sync
 }
 
 function copy_emmc_flashing_files () {
-	cd $OUTPUTDIR
+	cd $OUTPUT_DIR
 	sudo tar -cvzf images.tgz images
 	sudo cp images.tgz /mnt/tmp/opt/
 }
@@ -45,11 +36,11 @@ function flash_kernel_rootfs () {
 	sudo mkfs.ext4 /dev/$11
 	sudo mkdir -p /mnt/tmp
 	sudo mount /dev/$11 /mnt/tmp
-	sudo tar -xzvf $IMAGEDIR/ubuntu.tgz -C /mnt/tmp/
-	sudo cp $IMAGEDIR/zImage  /mnt/tmp/zImage
-	sudo cp $ROOTDIR/emmc_fusing.sh $IMAGEDIR/
+	sudo tar -xzvf $IMAGES_DIR/ubuntu.tgz -C /mnt/tmp/
+	sudo cp $IMAGES_DIR/zImage  /mnt/tmp/zImage
+	sudo cp $ROOT_DIR/emmc_fusing.sh $IMAGES_DIR/
 	copy_emmc_flashing_files
-	cd $ROOTDIR
+	cd $ROOT_DIR
 	sync
 	sudo umount /dev/$11
 	sync
@@ -78,7 +69,7 @@ fi
 
 if [ -b "/dev/$1" ]; then
 	flash_bootloder $1
-	cd $ROOTDIR
+	cd $ROOT_DIR
 	echo "SD card prepared"
 	echo "Insert sd card into board and set board in SD card bootmode"
 	echo "Power on board"

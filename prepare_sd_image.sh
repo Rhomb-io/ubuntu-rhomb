@@ -1,18 +1,9 @@
 #!/bin/bash
-ROOTDIR=$PWD
-OUTPUTDIR=$ROOTDIR/output
-IMAGEDIR=$ROOTDIR/output/images
-UBOOTDIR=$ROOTDIR/output/build/uboot-odroid-v2015.10
+. setup_env
+
 function device_not_found_error () {
 	echo "Given device not found!"
 	echo "please check dmesg for verification"
-}
-
-function copy_bootloader_binaries () {
-	cp $UBOOTDIR/sd_fuse/bl1.HardKernel $IMAGEDIR/
-	cp $UBOOTDIR/sd_fuse/bl2.HardKernel $IMAGEDIR/
-	cp $UBOOTDIR/sd_fuse/tzsw.HardKernel $IMAGEDIR/
-	cp $UBOOTDIR/sd_fuse/sd_fusing.sh $IMAGEDIR/
 }
 
 function create_partition () {
@@ -28,7 +19,7 @@ END
 }
 
 function flash_bootloder () {
-	cd $IMAGEDIR
+	cd $IMAGES_DIR
 	sudo ./sd_fusing.sh /dev/$1
 	sync
 }
@@ -39,9 +30,9 @@ function flash_kernel_rootfs () {
 	sudo mkfs.ext4 /dev/$1p1
 	sudo mkdir -p /mnt/tmp
 	sudo mount /dev/$1p1 /mnt/tmp
-	sudo tar -xzvf $IMAGEDIR/ubuntu.tgz -C /mnt/tmp/
-	sudo cp $IMAGEDIR/zImage  /mnt/tmp/zImage
-	cd $ROOTDIR
+	sudo tar -xzvf $IMAGES_DIR/ubuntu.tgz -C /mnt/tmp/
+	sudo cp $IMAGES_DIR/zImage  /mnt/tmp/zImage
+	cd $ROOT_DIR
 	sync
 	sudo umount /dev/$1p1
 	sync
@@ -59,8 +50,7 @@ then
 	echo "example: sdb, sdd, mmcblk0 etc"
 	exit 0
 else
-	copy_bootloader_binaries
-	cd $IMAGEDIR
+	cd $IMAGES_DIR
 	create_sd_image
 	create_partition loop0
 fi
@@ -74,7 +64,7 @@ fi
 
 if [ -b "/dev/loop0" ]; then
 	flash_bootloder loop0
-	cd $IMAGEDIR
+	cd $IMAGES_DIR
 	sudo dd if=ubuntu_sd.img of=/dev/$1 bs=1M conv=fsync
 	sync
 	losetup -d /dev/loop0

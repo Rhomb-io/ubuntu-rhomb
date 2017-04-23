@@ -7,6 +7,8 @@ Prerequisites
 -------------
 For ubuntu installation use SD card having atleast 16GB capacity.
 To use ubuntu pakcage machine should have atleast 15GB free space available. 
+
+Please delete all the partitions in SD card before using it for flashing.
 ------------------
 Build Instructions
 ------------------

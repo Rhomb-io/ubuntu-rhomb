@@ -1,16 +1,8 @@
 #!/bin/bash
 # This is generic build script we generated for our use case.
+. setup_env
+
 arg="$1"
-ROOT_DIR=$PWD
-SRC_DIR=$ROOT_DIR/dl
-OUT_DIR=$ROOT_DIR/output
-BUILD_DIR=$OUT_DIR/build
-TOOLCHAIN_DIR=$ROOT_DIR/output/build/toolchain
-UBOOT_DIR=$ROOT_DIR/output/build/uboot-odroid-v2015.10
-KERNEL_DIR=$ROOT_DIR/output/build/linux-odroid-4.8.y
-IMAGES_DIR=$ROOT_DIR/output/images
-UBUNTU_DIR=$ROOT_DIR/output/build/ubuntu
-FILESYSTEM_DIR=$ROOT_DIR/filesystem
 
 function print_help () {
 	echo "####################################################"
@@ -38,9 +30,9 @@ function print_help () {
 }
 
 function get_toolchain() {
-	mkdir -p $SRC_DIR
-	cd $SRC_DIR
-	wget https://github.com/Rhomb-io/ubuntu-rhomb/releases/download/1.0.0/exynos_arm_toolchain.tgz
+	mkdir -p $DOWNLOAD_DIR
+	cd $DOWNLOAD_DIR
+	wget https://github.com/Rhomb-io/common-packages-rhomb/releases/download/1.0.0/exynos_arm_toolchain.tgz
 }
 
 function export_toolchain () {
@@ -51,7 +43,7 @@ function export_toolchain () {
 		get_toolchain
 		mkdir -p $TOOLCHAIN_DIR
 		cd $TOOLCHAIN_DIR
-		tar -zxvf $SRC_DIR/exynos_arm_toolchain.tgz
+		tar -zxvf $DOWNLOAD_DIR/exynos_arm_toolchain.tgz
 		export PATH=$PATH:/$TOOLCHAIN_DIR
 		cd $ROOT_DIR
 	fi
@@ -100,6 +92,10 @@ function uboot_install () {
 	mkdir -p $FILESYSTEM_DIR/etc
 	cp $UBOOT_DIR/u-boot.bin $IMAGES_DIR/
 	cp $UBOOT_DIR/tools/env/fw_env.config $FILESYSTEM_DIR/etc/
+        cp $UBOOT_DIR/sd_fuse/bl1.HardKernel $IMAGES_DIR/
+        cp $UBOOT_DIR/sd_fuse/bl2.HardKernel $IMAGES_DIR/
+        cp $UBOOT_DIR/sd_fuse/tzsw.HardKernel $IMAGES_DIR/
+        cp $UBOOT_DIR/sd_fuse/sd_fusing.sh $IMAGES_DIR/
 }
 
 function uboot_rebuild () {
@@ -135,17 +131,17 @@ function build_ubuntu () {
 }
 
 function get_ubuntu () {
-	mkdir -p $SRC_DIR
-	cd $SRC_DIR
+	mkdir -p $DOWNLOAD_DIR
+	cd $DOWNLOAD_DIR
 	wget https://github.com/Rhomb-io/ubuntu-rhomb/releases/download/1.0.1/ubuntu_base_16_04.tgz
 	wget https://github.com/Rhomb-io/ubuntu-rhomb/releases/download/1.0.2/lib.tgz
 	wget https://github.com/Rhomb-io/ubuntu-rhomb/releases/download/1.0.3/share.tgz
 	cd $BUILD_DIR
-	sudo tar -zxvf $SRC_DIR/ubuntu_base_16_04.tgz
+	sudo tar -zxvf $DOWNLOAD_DIR/ubuntu_base_16_04.tgz
 	cd $UBUNTU_DIR
 	cd $UBUNTU_DIR/usr
-	sudo tar -zxvf $SRC_DIR/lib.tgz
-	sudo tar -zxvf $SRC_DIR/share.tgz
+	sudo tar -zxvf $DOWNLOAD_DIR/lib.tgz
+	sudo tar -zxvf $DOWNLOAD_DIR/share.tgz
 	sync
 }
 
