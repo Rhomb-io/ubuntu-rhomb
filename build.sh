@@ -30,9 +30,19 @@ function print_help () {
 }
 
 function get_toolchain() {
-	mkdir -p $DOWNLOAD_DIR
-	cd $DOWNLOAD_DIR
-	wget https://github.com/Rhomb-io/common-packages-rhomb/releases/download/1.0.0/exynos_arm_toolchain.tgz
+	if [ ! -d $DOWNLOAD_DIR ]
+	then
+		mkdir -p $DOWNLOAD_DIR
+		cd $DOWNLOAD_DIR
+		wget https://github.com/Rhomb-io/common-packages-rhomb/releases/download/1.0.0/exynos_arm_toolchain.tgz
+	elif [ -d $DOWNLOAD_DIR ]
+	then
+		if [ ! -f $DOWNLOAD_DIR/exynos_arm_toolchain.tgz ]
+		then
+			cd $DOWNLOAD_DIR
+			wget https://github.com/Rhomb-io/common-packages-rhomb/releases/download/1.0.0/exynos_arm_toolchain.tgz
+		fi
+	fi
 }
 
 function export_toolchain () {
@@ -131,14 +141,35 @@ function build_ubuntu () {
 }
 
 function get_ubuntu () {
-	mkdir -p $DOWNLOAD_DIR
-	cd $DOWNLOAD_DIR
-	wget https://github.com/Rhomb-io/ubuntu-rhomb/releases/download/1.0.1/ubuntu_base_16_04.tgz
-	wget https://github.com/Rhomb-io/ubuntu-rhomb/releases/download/1.0.2/lib.tgz
-	wget https://github.com/Rhomb-io/ubuntu-rhomb/releases/download/1.0.3/share.tgz
+	if [ ! -d $DOWNLOAD_DIR ]
+	then
+		mkdir -p $DOWNLOAD_DIR
+		cd $DOWNLOAD_DIR
+		wget https://github.com/Rhomb-io/ubuntu-rhomb/releases/download/1.0.4/ubuntu_rhomb_base_16_04.tgz
+		wget https://github.com/Rhomb-io/ubuntu-rhomb/releases/download/1.0.5/lib.tgz
+		wget https://github.com/Rhomb-io/ubuntu-rhomb/releases/download/1.0.6/share.tgz
+	elif [ -d $DOWNLOAD_DIR ]
+	then
+		if [ ! -f $DOWNLOAD_DIR/ubuntu_rhomb_base_16_04.tgz ]
+		then
+			cd $DOWNLOAD_DIR
+			wget https://github.com/Rhomb-io/ubuntu-rhomb/releases/download/1.0.4/ubuntu_rhomb_base_16_04.tgz
+		fi
+		if [ ! -f $DOWNLOAD_DIR/lib.tgz ]
+		then
+			cd $DOWNLOAD_DIR
+			wget https://github.com/Rhomb-io/ubuntu-rhomb/releases/download/1.0.5/lib.tgz
+		fi
+		if [ ! -f $DOWNLOAD_DIR/share.tgz ]
+		then
+			cd $DOWNLOAD_DIR
+			wget https://github.com/Rhomb-io/ubuntu-rhomb/releases/download/1.0.6/share.tgz
+		fi
+	fi
 	cd $BUILD_DIR
-	sudo tar -zxvf $DOWNLOAD_DIR/ubuntu_base_16_04.tgz
-	cd $UBUNTU_DIR
+	mkdir -p $UBUNTU_DIR
+	cd  $UBUNTU_DIR
+	sudo tar -zxvf $DOWNLOAD_DIR/ubuntu_rhomb_base_16_04.tgz
 	cd $UBUNTU_DIR/usr
 	sudo tar -zxvf $DOWNLOAD_DIR/lib.tgz
 	sudo tar -zxvf $DOWNLOAD_DIR/share.tgz

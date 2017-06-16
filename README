@@ -80,8 +80,10 @@ NOTE: In case of booting from eMMC we have seen that sometimes it failed to disp
 on HDMI screen. In that case login into board and apply below commands. This is one time
 command you won't face issue after that.
 
-# sudo dpkg-reconfigure lightdm
-# sudo /etc/init.d/lightdm restart
+# sudo dpkg-reconfigure gdm3
+It will provide an options to select default display manager.
+Now select "gdm3" as your default display manager
+# sudo /etc/init.d/gdm3 restart
 
 -----------------------------------
 Creating and installing image files
