@@ -188,6 +188,7 @@ function ubuntu_build () {
 
 function all_dir_clean () {
 	rm -rf $ROOT_DIR/output
+	rm -rf $ROOT_DIR/dl
 }
 
 case $arg in
