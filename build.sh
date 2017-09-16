@@ -5,8 +5,8 @@
 arg="$1"
 
 function print_help () {
-	echo "####################################################"
-	echo "To build complete buildroot and generate rootfs.tar"
+	echo "########################################################"
+	echo "To build complete ubuntu package"
 	echo "sudo ./build.sh all"
 	echo ""
 	echo "To rebuild linux with updated changes"
@@ -26,7 +26,7 @@ function print_help () {
 	echo ""
 	echo "To get help of build script commands"
 	echo "sudo ./build.sh help"
-	echo "####################################################"
+	echo "########################################################"
 }
 
 function get_toolchain() {
@@ -53,7 +53,7 @@ function export_toolchain () {
 		get_toolchain
 		mkdir -p $TOOLCHAIN_DIR
 		cd $TOOLCHAIN_DIR
-		tar -zxvf $DOWNLOAD_DIR/exynos_arm_toolchain.tgz
+		tar -zxf $DOWNLOAD_DIR/exynos_arm_toolchain.tgz
 		export PATH=$PATH:/$TOOLCHAIN_DIR
 		cd $ROOT_DIR
 	fi
@@ -145,34 +145,19 @@ function get_ubuntu () {
 	then
 		mkdir -p $DOWNLOAD_DIR
 		cd $DOWNLOAD_DIR
-		wget https://github.com/Rhomb-io/ubuntu-rhomb/releases/download/1.0.4/ubuntu_rhomb_base_16_04.tgz
-		wget https://github.com/Rhomb-io/ubuntu-rhomb/releases/download/1.0.5/lib.tgz
-		wget https://github.com/Rhomb-io/ubuntu-rhomb/releases/download/1.0.6/share.tgz
+		wget https://github.com/Rhomb-io/ubuntu-rhomb/releases/download/1.0.7/ubuntu_rhomb_16_04_base.tgz
 	elif [ -d $DOWNLOAD_DIR ]
 	then
-		if [ ! -f $DOWNLOAD_DIR/ubuntu_rhomb_base_16_04.tgz ]
+		if [ ! -f $DOWNLOAD_DIR/ubuntu_rhomb_16_04_base.tgz ]
 		then
 			cd $DOWNLOAD_DIR
-			wget https://github.com/Rhomb-io/ubuntu-rhomb/releases/download/1.0.4/ubuntu_rhomb_base_16_04.tgz
-		fi
-		if [ ! -f $DOWNLOAD_DIR/lib.tgz ]
-		then
-			cd $DOWNLOAD_DIR
-			wget https://github.com/Rhomb-io/ubuntu-rhomb/releases/download/1.0.5/lib.tgz
-		fi
-		if [ ! -f $DOWNLOAD_DIR/share.tgz ]
-		then
-			cd $DOWNLOAD_DIR
-			wget https://github.com/Rhomb-io/ubuntu-rhomb/releases/download/1.0.6/share.tgz
+			wget https://github.com/Rhomb-io/ubuntu-rhomb/releases/download/1.0.7/ubuntu_rhomb_16_04_base.tgz
 		fi
 	fi
 	cd $BUILD_DIR
 	mkdir -p $UBUNTU_DIR
 	cd  $UBUNTU_DIR
-	sudo tar -zxvf $DOWNLOAD_DIR/ubuntu_rhomb_base_16_04.tgz
-	cd $UBUNTU_DIR/usr
-	sudo tar -zxvf $DOWNLOAD_DIR/lib.tgz
-	sudo tar -zxvf $DOWNLOAD_DIR/share.tgz
+	sudo tar -zxvf $DOWNLOAD_DIR/ubuntu_rhomb_16_04_base.tgz
 	sync
 }
 
