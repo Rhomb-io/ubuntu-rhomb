@@ -51,6 +51,7 @@ then
 	echo "usage:./prepare_sd.sh <SD Reader's device file>"
 	echo "example: sdb, sdd, mmcblk0 etc"
 	exit 0
+fi
 
 if [ -b "/dev/$11" ]; then
 	flash_kernel_rootfs $1
